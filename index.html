@@ -85,7 +85,7 @@
 <div class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️</div>
 
 <div class="sub-warning" style="margin-right: 50px; background: rgba(255,152,0,0.1); border: 1px solid #ff9800; padding: 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-align: center;">
-    ⚠️ Подписка обязательна!
+    ⚠️ Подписка на канал обязательна!
 </div>
 
 <div class="row">
@@ -104,13 +104,13 @@
     </select>
     <div class="row" style="margin-top:10px">
         <div><label id="unit-label">Количество страниц</label><input type="number" id="count" placeholder="0" oninput="update()"></div>
-        <div><label>Дата (ДД.ММ)</label><input type="text" id="date" maxlength="5" oninput="update()"></div>
+        <div><label>Дедлайн (ДД.ММ)</label><input type="text" id="date" maxlength="5" oninput="update()"></div>
     </div>
 </div>
 
 <div class="card">
     <label>Остальные детали</label>
-    <textarea id="details" rows="2" placeholder="Напр: шрифт 14..." oninput="update()"></textarea>
+    <textarea id="details" rows="2" placeholder="Напр: шрифт Times New Roman..." oninput="update()"></textarea>
     <div style="margin-top:10px"><label>Сумма (₽)</label><input type="text" id="price" placeholder="500" oninput="update()"></div>
 </div>
 
@@ -193,7 +193,7 @@
         let header = isUrgent ? '🚨 СРОЧНЫЙ ЗАКАЗ 🚨\n' : '';
         const text = `${header}1. Вид: ${type}
 2. Количество: ${countInput.value || '___'}
-3. Срок: ${dateInput.value || '___'}
+3. Дедлайн: ${dateInput.value || '___'}
 4. Сумма: ${priceInput.value || '___'} руб.
 5. Детали: ${details}
 ---
