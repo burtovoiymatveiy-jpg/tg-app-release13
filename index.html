@@ -31,11 +31,12 @@
         .card { background: var(--sec-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--card-border); }
         label { font-size: 10px; color: var(--hint); font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; }
         
-        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
         input, select, textarea {
             background: var(--bg); border: 1px solid var(--card-border); border-radius: 10px;
             color: var(--text); font-size: 16px; padding: 10px; width: 100%; box-sizing: border-box; outline: none;
         }
+
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
         .inner-tip {
             position: absolute; right: 8px; color: var(--accent); font-weight: 700;
             background: var(--sec-bg); width: 22px; height: 22px; border-radius: 50%;
@@ -54,7 +55,7 @@
         .secondary-btn { background: var(--sec-bg); border: 1px solid var(--card-border); color: var(--accent); padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; flex: 1; cursor: pointer; }
         
         .preview-box { background: var(--sec-bg); border: 1px dashed var(--hint); border-radius: 12px; padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-line; max-height: 0; opacity: 0; overflow: hidden; transition: 0.4s; }
-        .preview-box.show { max-height: 500px; opacity: 1; margin-bottom: 10px; border: 1px solid var(--accent); }
+        .preview-box.show { max-height: 500px; opacity: 1; margin-top: 10px; margin-bottom: 10px; border: 1px solid var(--accent); }
 
         .advantage-item { text-align: center; flex: 1; }
         .advantage-icon { font-size: 20px; }
@@ -151,7 +152,7 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Установка текущей даты в плейсхолдер
+    // Плейсхолдер даты
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -159,8 +160,8 @@
 
     function showTip(f) {
         const tips = {
-            deadline: "Укажите дату, когда работа должна быть готова (например, 20.02).",
-            details: "Напишите тему работы, требования к шрифту или источникам."
+            deadline: "Укажите дату (например, 20.02).",
+            details: "Тема, требования к шрифту или источникам."
         };
         tg.showAlert(tips[f]);
     }
@@ -168,19 +169,22 @@
     function checkNight() {
         try {
             const options = { timeZone: 'Asia/Yakutsk', hour: 'numeric', hour12: false };
-            const h = parseInt(new Intl.DateTimeFormat('ru-RU', options).format(new Date()));
-            if (h >= 23 || h < 7) {
+            const hourStr = new Intl.DateTimeFormat('ru-RU', options).format(new Date());
+            const h = parseInt(hourStr);
+            
+            if (!isNaN(h) && (h >= 23 || h < 7)) {
                 document.getElementById('status-text').innerText = "Статус: Сплю";
                 document.getElementById('status-text').style.color = "var(--hint)";
                 document.getElementById('status-dot').className = "status-dot";
-                document.getElementById('response-time').innerText = "Отвечу утром (МСК+6)";
+                document.getElementById('response-time').innerText = "Отвечу утром (ЯКТ)";
             }
-        } catch (e) { console.error("TimeZone error", e); }
+        } catch (e) { console.error("Time check failed", e); }
     }
 
     function toggleTheme() {
         const isD = document.body.getAttribute('data-theme') === 'dark';
-        document.body.setAttribute('data-theme', isD ? 'light' : 'dark');
+        const newTheme = isD ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
         document.getElementById('theme-btn').innerText = isD ? '☀️' : '🌙';
         tg.HapticFeedback.impactOccurred('light');
     }
@@ -195,32 +199,40 @@
 
         document.getElementById('unit-label').innerText = type.includes("През") ? "Кол-во слайдов" : "Кол-во страниц";
         
-        // Показываем превью, если есть количество и цена
         const canShow = count && price;
-        document.getElementById('preview').classList.toggle('show', !!canShow);
+        const preview = document.getElementById('preview');
+        preview.classList.toggle('show', !!canShow);
 
         let h = urg ? '🚨 СРОЧНЫЙ ЗАКАЗ 🚨\n' : '';
-        document.getElementById('preview').innerText = `${h}1. Вид: ${type}\n2. Кол-во: ${count}\n3. Дедлайн: ${date}\n4. Сумма: ${price} руб.\n5. Детали: ${det}\n---\n✅ Согласен на 100% предоплату и отсутствие антиплагиата.`;
+        preview.innerText = `${h}1. Вид: ${type}\n2. Кол-во: ${count}\n3. Дедлайн: ${date}\n4. Сумма: ${price} руб.\n5. Детали: ${det}\n---\n✅ Согласен на 100% предоплату.`;
     }
 
-    function copy() {
+    async function copy() {
         const c = document.getElementById('count'), p = document.getElementById('price');
         if (!c.value || !p.value) { 
             tg.showAlert("Заполните количество и сумму!"); 
             return; 
         }
         
-        const area = document.createElement("textarea");
-        area.value = document.getElementById('preview').innerText;
-        document.body.appendChild(area); 
-        area.select();
-        document.execCommand('copy'); 
-        document.body.removeChild(area);
+        const text = document.getElementById('preview').innerText;
         
-        tg.HapticFeedback.notificationOccurred('success');
-        tg.showConfirm("Анкета скопирована! Перейти в диалог с @awarem?", (ok) => {
-            if (ok) tg.openTelegramLink("https://t.me/awarem");
-        });
+        try {
+            // Современный метод копирования
+            await navigator.clipboard.writeText(text);
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showConfirm("Анкета скопирована! Перейти к @awarem?", (ok) => {
+                if (ok) tg.openTelegramLink("https://t.me/awarem");
+            });
+        } catch (err) {
+            // Фолбэк для старых WebView
+            const area = document.createElement("textarea");
+            area.value = text;
+            document.body.appendChild(area); 
+            area.select();
+            document.execCommand('copy'); 
+            document.body.removeChild(area);
+            tg.showAlert("Скопировано!");
+        }
     }
 
     function clearAll() {
@@ -231,6 +243,7 @@
         }
     }
 
+    // Инициализация темы системы
     if (tg.colorScheme === 'dark') {
         document.body.setAttribute('data-theme', 'dark');
         document.getElementById('theme-btn').innerText = '🌙';
