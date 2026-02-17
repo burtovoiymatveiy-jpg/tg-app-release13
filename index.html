@@ -22,7 +22,6 @@
             display: flex; flex-direction: column; gap: 12px; transition: 0.3s;
         }
 
-        /* Исправлено: заголовок в ряд, кнопка темы не перекрывает контент */
         .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .theme-toggle {
             background: var(--sec-bg); border: 1px solid var(--card-border); 
@@ -60,7 +59,6 @@
         .preview-box { background: var(--sec-bg); border: 1px dashed var(--hint); border-radius: 12px; padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-line; display: none; margin: 10px 0; border: 1px solid var(--accent); }
         .preview-box.show { display: block; }
 
-        /* Исправлено: тумблер на одной линии с текстом */
         .switch-row { display: flex; justify-content: space-between; align-items: center; }
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -94,7 +92,7 @@
 <div style="display: flex; justify-content: space-around; gap: 8px;">
     <div class="advantage-item"><div class="advantage-icon">⚡️</div><div class="advantage-text">Быстро</div></div>
     <div class="advantage-item"><div class="advantage-icon">💎</div><div class="advantage-text">Качество</div></div>
-    <div class="advantage-item"><div class="advantage-icon">🔒</div><div class="advantage-text">Анонимно</div></div>
+    <div class="advantage-item"><div class="advantage-icon">🕒</div><div class="advantage-text">24/7</div></div>
 </div>
 
 <div class="card">
@@ -156,7 +154,6 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Дата для плейсхолдера и подсказки
     const now = new Date();
     const todayStr = `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('date').placeholder = todayStr;
@@ -165,7 +162,7 @@
         if (f === 'deadline') {
             tg.showAlert(`Укажите дату сдачи. Сегодня: ${todayStr}`);
         } else {
-            tg.showAlert("Укажите тему, количество источников и особые требования.");
+            tg.showAlert("Укажите тему и важные требования.");
         }
     }
 
@@ -228,7 +225,7 @@
                 if (ok) tg.openTelegramLink("https://t.me/awarem");
             });
         } catch (e) {
-            tg.showAlert("Скопируйте текст вручную из поля предпросмотра.");
+            tg.showAlert("Скопируйте текст вручную.");
         }
     }
 
@@ -248,4 +245,3 @@
 </script>
 </body>
 </html>
-
