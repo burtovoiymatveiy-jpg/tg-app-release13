@@ -58,9 +58,18 @@
         .preview-box { background: var(--sec-bg); border: 1px dashed var(--hint); border-radius: 12px; padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-line; display: none; margin: 10px 0; border: 1px solid var(--accent); }
         .preview-box.show { display: block; }
 
-        /* Исправлено: тумблер идеально по центру текста */
-        .switch-row { display: flex; justify-content: space-between; align-items: center; line-height: 1; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; margin-left: 10px; }
+        /* ИСПРАВЛЕННЫЙ ТУМБЛЕР: теперь текст и кнопка строго по центру */
+        .switch-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 14px;
+        }
+        .switch-row span { 
+            line-height: 22px; /* Высота равна высоте тумблера */
+            display: block;
+        }
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--toggle-off); transition: .3s; border-radius: 22px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
@@ -71,7 +80,7 @@
         .advantage-icon { font-size: 20px; }
         .advantage-text { font-size: 9px; font-weight: 700; color: var(--hint); text-transform: uppercase; }
         
-        .version-footer { font-size: 9px; color: var(--hint); text-align: center; margin-top: 8px; opacity: 0.5; letter-spacing: 1px; }
+        .version-footer { font-size: 10px; color: var(--hint); text-align: center; margin-top: 12px; opacity: 0.5; font-weight: 600; letter-spacing: 0.5px; }
         .disclaimer { font-size: 10px; color: var(--hint); text-align: center; line-height: 1.4; }
     </style>
 </head>
@@ -102,7 +111,7 @@
     <select id="type" oninput="update()">
         <option value="Реферат">📝 Реферат</option>
         <option value="Презентация">📊 Презентация</option>
-        <option value="Доклад">📑 Доклад</option>
+        <option value="Доклад">🎤 Доклад</option>
         <option value="Проект">💡 Проект</option>
         <option value="Переписать лекцию">🖋 Переписать лекцию</option>
     </select>
@@ -133,7 +142,10 @@
 
 <div class="card switch-row">
     <span style="font-size: 14px; font-weight: 700;">🚨 Срочный заказ</span>
-    <label class="switch"><input type="checkbox" id="urgent" onchange="update()"><span class="slider"></span></label>
+    <label class="switch">
+        <input type="checkbox" id="urgent" onchange="update()">
+        <span class="slider"></span>
+    </label>
 </div>
 
 <div class="preview-box" id="preview"></div>
@@ -148,7 +160,7 @@
     💳 <b>Предоплата 100%</b> | ✅ Без антиплагиата<br>
     Работа выполняется строго по вашим деталям.
 </div>
-<div class="version-footer">BETA0.23</div>
+<div class="version-footer">BETA 0.23</div>
 
 <script>
     const tg = window.Telegram.WebApp;
@@ -159,7 +171,7 @@
     document.getElementById('date').placeholder = todayStr;
 
     function showTip(f) {
-        if (f === 'deadline') tg.showAlert(`Укажите дату сдачи. Сегодня: ${todayStr}`);
+        if (f === 'deadline') tg.showAlert(`Сегодня: ${todayStr}`);
     }
 
     function toggleTheme() {
@@ -190,7 +202,7 @@
     }
 
     function checkSubAndCopy() {
-        tg.showConfirm("Вы подписаны на канал? Это обязательно.", (ok) => {
+        tg.showConfirm("Вы подписаны на канал?", (ok) => {
             if (ok) copy();
             else tg.openTelegramLink('https://t.me/txtandpptx');
         });
@@ -206,7 +218,7 @@
             tg.showConfirm("Скопировано! Отправить @awarem?", (ok) => {
                 if (ok) tg.openTelegramLink("https://t.me/awarem");
             });
-        } catch (e) { tg.showAlert("Ошибка копирования."); }
+        } catch (e) { tg.showAlert("Ошибка. Скопируйте вручную."); }
     }
 
     function clearAll() {
